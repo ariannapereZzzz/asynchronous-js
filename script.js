@@ -136,11 +136,11 @@ const renderCountry = function (data, className = '') {
 // //       console.log(data);
 // //       renderCountry(data[0]);
 // //     });
-// // };
-// const renderError = function (msg) {
-//   countriesContainer.insertAdjacentText('beforeend', msg);
-//   countriesContainer.style.opacity = 1;
 // };
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  countriesContainer.style.opacity = 1;
+};
 
 // const getJSON = function (url, errorMsg = 'Something went wrong') {
 //   return fetch(url).then(response => {
@@ -375,10 +375,30 @@ const whereAmI = async function (country) {
     const data = await res.json();
     console.log('data::', data);
     renderCountry(data);
+    return `You are in ${dataGeo.city}, ${dataGeo.country}`;
   } catch (err) {
     console.error(err);
-    renderError(`Something went wrong! ${err.message}`);
+    renderError(`${err.message}`);
+
+    // Reject promise returned from async function
+    throw err;
   }
 };
-whereAmI('philippines');
-console.log('FIRST::', 'FIRST');
+console.log('1: Will get location');
+const city = whereAmI();
+// console.log(city);
+// whereAmI()
+//   .then(city => console.log(`2: ${city}`))
+//   .catch(err => console.error(`2: ${err.message}`))
+//   .finally(() => console.log('3: Finished getting Location'));
+// console.log('3: Finished getting location ');
+
+(async function () {
+  try {
+    const city = await whereAmI();
+    console.log(`2: ${city}`);
+  } catch (err) {
+    console.error(`2: ${err.message}`);
+  }
+  console.log(`3: Finished getting location`);
+})();
